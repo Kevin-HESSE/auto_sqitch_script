@@ -24,6 +24,15 @@ database=invoice
 dbpassword=invoice
 
 # -------------------------------------------------
+# Database engine
+# -------------------------------------------------
+
+#Allow you to configure which database engine you want to use for your project.
+#Uncomment the one needed
+engine=pg
+#engine=mysql
+
+# -------------------------------------------------
 # Path (Do not modify)
 # Script which verify the existence
 # -------------------------------------------------
@@ -35,15 +44,17 @@ if [[ -d "$SCRIPT_DIR/$migration_folder"
   then
     migration_path="$SCRIPT_DIR/$migration_folder"
     script_path="$SCRIPT_DIR/$script_folder"
+    optionlist=(init add deploy revert verify)
 else
   echo "WARNING : The directory $migration_folder and $script_folder doesn't exist"
+  optionlist=(init)
 fi
 
 # -------------------------------------------------
 # Script link to sqitch automatisation (Do not modify)
 # Execute different instruction based on the user choice
 # -------------------------------------------------
-optionlist=(init add deploy revert verify)
+
 
 PS3='Action to execute > '
 
@@ -78,7 +89,7 @@ select item in "${optionlist[@]}"; do
     rm migrations/sqitch.plan
     echo "File from sqitch deleted !"
 
-    sqitch init --engine pg --top-dir "$migration_folder" "$database" --target db:pg:"$database"
+    sqitch init --engine "$engine" --top-dir "$migration_folder" "$database" --target db:"$engine":"$database"
     echo "Sqitch initialized !"
 
     if [ ! -d "$script_path" ]; then
@@ -104,7 +115,7 @@ select item in "${optionlist[@]}"; do
       echo sqitch add "$userfile" -n "\"$usercomment\"" >> "$script_path"/"$version_file_name".sh
       echo "The version $userfile has been inserted into $script_path/$version_file_name"
     else
-      echo "$script_path/$version_file_name.sh doesn't exist"
+      echo "$script_path/$version_file_name.sh doesn't exist. Have you run the init option before ?"
     fi
     break
   elif [ "$item" ];
