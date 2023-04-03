@@ -2,13 +2,15 @@
 
 ## Installation
 
-No installation is necessary.
+No installation is necessary except the sqitch tools.
+
+For more information about sqitch, check the following link : [sqitch documentation](https://sqitch.org/)
 
 You just need to copy the content of auto_squitch.sh inside a shell script at the root of your project. All example below are based on this name. Adapt it if you named it differently.
 
 ## Configuration
 
-All configurations are at the beginning of the auto_squitch.sh
+All configurations are at the beginning of the auto_squitch.sh between the comment block `Variable to modify`
 
 ### Mandatory
 
@@ -16,13 +18,6 @@ You can change the directory where all migrations occur by changing the followin
 ```shell
 # Folder where all migrations occurs
 migration_folder=migrations
-```
-
-The additional script created by this one are specified by script_folder variable
-
-```shell
-# Folder where all scripts are located
-script_folder=script
 ```
 
 You can change the name of the versioning script created by default
@@ -43,6 +38,9 @@ dbuser=admin_invoice
 database=invoice
 # The password of the sql user
 dbpassword=invoice
+# The database engine used for the project
+engine=pg
+#engine=mysql
 ```
 
 ## Usage
@@ -64,6 +62,11 @@ It will prompt you several choices :
 - deploy OR revert OR verify
   - The last three can select all versioning available or the step you need to go
 
+Flag are supported, you can run for more information :
+```shell
+bash ./auto_sqitch.sh -h
+```
+
 ### Init
 
 It will initialize a new project with sqitch :
@@ -71,17 +74,17 @@ It will initialize a new project with sqitch :
 The following variables are used during this process :
 
 - `migration_folder`
-- `script_folder`
 - `version_file_name`
 - `dbuser`
 - `database`
+- `engine`
 
-The two following directories are create during the process, the name will be different if you change `migration_folder` and `script_folder` variables :
+The following directory is create during the process, the name will be different if you change `migration_folder` variable :
 
 - Migrations, with his subdirectories "deploy", "revert", "verify"
   - This element is handled by sqitch itself with variables passed as arguments.
-- Script, with the versioning script named by the `version_file_name`
-  - This script handle this process.
+  - inside there is a versioning script handle by this script. It will store every version you add.
+
 
 
 
