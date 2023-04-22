@@ -111,7 +111,7 @@ function command_sqitch_init {
     echo "Database $database created !"
 
     if [ -f sqitch.conf ]; then rm sqitch.conf; fi
-    if [ -f migrations/sqitch.plan ]; then rm migrations/sqitch.plan; fi
+    if [ -f $migration_folder/sqitch.plan ]; then rm migrations/sqitch.plan; fi
     echo "File from sqitch deleted !"
 
     sqitch init --engine "$engine" --top-dir "$migration_folder" "$database" --target db:"$engine":"$database"
@@ -125,8 +125,17 @@ function command_sqitch_init {
     fi
 }
 
+# Function to update the sqitch.plan file.
+# If it doesn't exist, prompt an error.
 function command_sqitch_update {
-    bash "$SCRIPT_DIR"/"$migration_folder"/"$version_file_name".sh
+    if [ -f $migration_folder/sqitch.plan ]; then
+        bash "$SCRIPT_DIR"/"$migration_folder"/"$version_file_name".sh;
+        echo "Success: The file sqitch.plan has been updated"
+    else
+        echo "Error: The file sqitch.plan is not found. Have you run init before ?"
+        exit 1
+    fi
+
 }
 
 # Execute the command sqitch add with an autocompletion of the versionning script

@@ -12,7 +12,16 @@ You just need to copy the content of auto_squitch.sh inside a shell script at th
 
 All configurations are at the beginning of the auto_squitch.sh between the comment block `Variable to modify`
 
-### Mandatory
+### Specification
+
+Check the table below :
+
+| Environment | Variables to use                                                                                      | Notes                              |
+|-------------|-------------------------------------------------------------------------------------------------------|------------------------------------|
+| Production  | - migrations_folder<br/>- version_file<br/>- engine                                                   |                                    |
+| Development | - migrations_folder<br/>- version_file_name<br/>- dbuser<br/>- database<br/>- dbpassword<br/>- engine | Add this file to `.gitignore` file |
+
+### Mandatories variables
 
 You can change the directory where all migrations occur by changing the following variable :
 ```shell
@@ -27,9 +36,17 @@ You can change the name of the versioning script created by default
 version_file_name=db_version
 ```
 
-### Optional
+You can specify the database engine you want to use
 
-You can force some information for script execution. It is recommended for the development environment. Comment the line to ignore is effect 
+```shell
+# The database engine used for the project
+engine=pg
+#engine=mysql
+```
+
+### Optionals variables
+
+You can force some information for script execution. Comment the line to ignore is effect 
 
 ```shell
 # Design the user of the sql server who own the database of the project
@@ -38,9 +55,6 @@ dbuser=admin_invoice
 database=invoice
 # The password of the sql user
 dbpassword=invoice
-# The database engine used for the project
-engine=pg
-#engine=mysql
 ```
 
 ## Usage
@@ -53,38 +67,56 @@ bash ./auto_sqitch.sh
 
 It will prompt you several choices :
 
-- init
-  - Initialize sqitch with some setup and creating directory necessary for the project
-- add
-  - Add a new version to deploy with the command `sqitch add <filename> -n "comment`.
-  - It will require two prompts : first one for the name of the file and second for commentary
-  - The versioning script will be autocomplete each time this command run
-- deploy OR revert OR verify
-  - The last three can select all versioning available or the step you need to go
+| Action | Script flag (Shortcut) | Description                                                                        |
+|--------|------------------------|------------------------------------------------------------------------------------|
+| init   | -i                     | Initialize sqitch with some setup and creating directory necessary for the project |
+| update | -u                     | Update the existing file sqitch.plan if you clone a project which use sqitch       |
+| add    | -a                     | Add a new version to deploy                                                        |
+| deploy | -d                     | Deploy all or a specified version                                                  |
+| revert | -r                     | Revert all or a specified version                                                  |
+| verify | -v                     | Verify all or a specified version                                                  |
+| help   | -h                     | Display a help message                                                             |
 
-Flag are supported, you can run for more information :
-```shell
-bash ./auto_sqitch.sh -h
-```
 
 ### Init
 
-It will initialize a new project with sqitch :
+It will initialize a new project with sqitch. 
 
-The following variables are used during this process :
+This command is to use when :
+- you need to start a fresh sqitch project 
+- you clone a repository which use sqitch
 
-- `migration_folder`
-- `version_file_name`
-- `dbuser`
-- `database`
-- `engine`
-
-The following directory is create during the process, the name will be different if you change `migration_folder` variable :
+The following directory is created during the process, the name will be different if you change `migration_folder` variable :
 
 - Migrations, with his subdirectories "deploy", "revert", "verify"
   - This element is handled by sqitch itself with variables passed as arguments.
   - inside there is a versioning script handle by this script. It will store every version you add.
 
+### Update
+
+It will update the file `sqitch.plan` with the last version added. It can be useful, if you already have this file on your project but ignored by git, to add newer version.
+
+### Add
+
+It will create a new version. All files are created following this pattern :
+
+```shell
+1.filename.sql
+```
+
+The number is added automatically, you just need to inform the filename during the prompt phase and add a comment.
+
+### Deploy
+
+It will deploy all versions at once or you can specify the version to go.
+
+### Revert
+
+It will revert all versions at once or you can specify the version to go.
+
+### Verify
+
+It will verify all versions at once or you can specify the version to go.
 
 
 
